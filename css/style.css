@@ -1,0 +1,105 @@
+@font-face {
+  font-family: "RedHat";
+  src: url("../fonts/RedHatDisplay-Regular.otf") format("opentype");
+}
+
+
+
+
+h1 {
+    font-family: "RedHat";
+    font-style: bold;
+    font-weight: 100;
+    font-variant-ligatures: normal;
+    font-size: 4rem;
+    letter-spacing: 1px;
+
+
+}
+
+h2 {
+    font-family: "RedHat";
+    font-style: normal;
+    font-weight: 100;
+    font-variant-ligatures: normal;
+    font-size: 3rem;
+    letter-spacing: 1px;
+
+
+}
+.link1-titleA {
+    font-family: "Symbol", serif; 
+    font-style: bold;
+    font-weight: 100;
+    font-variant-ligatures: normal;
+    font-size: 2rem;
+    letter-spacing: 1px;
+
+
+}
+
+.link1-titleB {
+    font-family: "Segoe Script", serif; 
+    font-style: bold;
+    font-weight: 100;
+    font-variant-ligatures: normal;
+    font-size: 2rem;
+    letter-spacing: 1px;
+
+
+}
+
+.link1  {
+    font-family: "Segoe Script", serif; 
+    font-style: normal;
+    font-weight: 100;
+    font-variant-ligatures: normal;
+    font-size: 1rem;
+    letter-spacing: 1px;
+
+
+}
+
+.link2 a {
+    font-family: "SimSun", serif; 
+    font-style: bold;
+    font-weight: 100;
+    font-variant-ligatures: normal;
+    font-size: 2rem;
+    letter-spacing: 1px;
+
+
+}
+
+.link2  {
+    font-family: "SimSun", serif; 
+    font-style: normal;
+    font-weight: 100;
+    font-variant-ligatures: normal;
+    font-size: 1rem;
+    letter-spacing: 1px;
+
+
+}
+
+.link3 a {
+    font-family: "MV Boli", serif; 
+    font-style: bold;
+    font-weight: 100;
+    font-variant-ligatures: normal;
+    font-size: 2rem;
+    letter-spacing: 1px;
+
+
+}
+
+.link3  {
+    font-family: "MV Boli", serif; 
+    font-style: normal;
+    font-weight: 100;
+    font-variant-ligatures: normal;
+    font-size: 1rem;
+    letter-spacing: 1px;
+
+
+}
