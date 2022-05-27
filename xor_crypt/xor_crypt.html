@@ -1,362 +1,42 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <title>XOR Crypt</title>
-    <style>
-      html, body {
-      min-height: 100%;
-      }
-      body, div, form, input, select, textarea, p { 
-      padding: 0;
-      margin: 0;
-      outline: none;
-      font-family: Roboto, Arial, sans-serif;
-      font-size: 14px;
-      color: #666;
-      line-height: 22px;
-      }
-      h1 {
-      margin: 15px 0;
-      font-weight: 400;
-      }
-      .testbox {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: inherit;
-      padding: 3px;
-      }
-      form {
-      width: 100%;
-      padding: 20px;
-      background: #fff;
-      box-shadow: 0 2px 5px #ccc; 
-      }
-      input, select, textarea {
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-      }
-      input:hover, select:hover, textarea:hover {
-      outline: none;
-      box-shadow: 0 0 5px 0 #095484;
-      }
-      input {
-      width: calc(100% - 10px);
-      padding: 5px;
-      }
-      select {
-      width: 100%;
-      padding: 7px 0;
-      background: transparent;
-      }
-      textarea {
-      width: calc(100% - 2px);
-      paddung: 5px;
-      }
-      .item {
-      position: relative;
-      margin: 10px 0;
-      }
-      .item:hover p, .item:hover i {
-      color: #095484;
-      }
-      input:hover, select:hover, textarea:hover {
-      box-shadow: 0 0 5px 0 #095484;
-      }
-      .status:hover input {
-      box-shadow: none;
-      }
-      .status label:hover input {
-      box-shadow: 0 0 5px 0 #095484;
-      }
-      .status-item input, .status-item span {
-      width: auto;
-      vertical-align: middle;
-      }
-      .status-item input {
-      margin: 0;
-      }
-      .status-item span {
-      margin: 0 20px 0 5px;
-      }
-      input[type="date"]::-webkit-inner-spin-button {
-      display: none;
-      }
-      input[type="time"]::-webkit-inner-spin-button {
-      margin: 2px 22px 0 0;
-      }
-      .item i, input[type="date"]::-webkit-calendar-picker-indicator {
-      position: absolute;
-      font-size: 20px;
-      color: #a9a9a9;
-      }
-      .item i {
-      right: 1%;
-      top: 30px;
-      z-index: 1;
-      }
-      [type="date"]::-webkit-calendar-picker-indicator {
-      right: 0;
-      z-index: 2;
-      opacity: 0;
-      cursor: pointer;
-      }
-      .btn-block {
-      margin-top: 20px;
-      text-align: center;
-      }
-      button {
-      width: auto;
-      padding: 10px;
-      border: none;
-      -webkit-border-radius: 5px; 
-      -moz-border-radius: 5px; 
-      border-radius: 5px; 
-      background-color: #095484;
-      font-size: 16px;
-      color: #fff;
-      cursor: pointer;
-      }
-      button:hover {
-      background-color: #0666a3;
-      }
-      @media (min-width: 568px) {
-      .name-item {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      }
-      .name-item input {
-      width: calc(50% - 20px);
-      }
-      }
-	.notify-error {
- 	padding:10px;
-    	margin:10px 0;
-    	color: #D8000C;
-    	background-color: #FFD2D2;
-	}
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
   </head>
+
   <body>
+    <script type="text/javascript" src="scripts/xor_crypt.js"></script>
     <div class="testbox">
       <form action="/" method="dialog">
         <h1>XOR Crypt</h1>
-	<!--div id="error" class="notify-error"></div-->
-	<div id="message" ></div>
-        <!--div class="item status">
-          <p>Crypt Type:</p>
-          <div class="status-item">
-            <label><input type="checkbox" name="name"> <span>XOR</span></label>
-	    <s>
-            <label><input type="checkbox" name="name"> <span>PGP</span></label>
-            <label><input type="checkbox" name="name"> <span>Other</span></label>
-	    </s>
-          </div>
-        </div-->
-
+        <div id="message"></div>
         <div class="item">
-	  <button onclick="genRandomKey()">Generate Key</button>
+          <button onclick="genRandomKey()">Generate Key</button>
           <p>Key:</p>
           <div class="name-item">
-	    <input id="key" type="text" name="key" placeholder="Key" />
+            <input id="key" type="text" name="key" placeholder="Key" />
           </div>
         </div>
         <div class="item">
-	  <button onclick="genSalt()">Generate Salt</button>
+          <button onclick="genSalt()">Generate Salt</button>
         </div>
 
         <div class="item">
-		<div>Plain Text:</div>
-		<textarea id="plaintext" rows="5">Hello World</textarea>
-		<button onclick="clearPlaintext()">Clear</button>
-		<div>Cipher Text:</div>
-		<textarea id="ciphertext" rows="5"></textarea>
-		<button onclick="clearCiphertext()">Clear</button>
-	</div>
-	<div class="btn-block">
-		<button onclick="encryptDecrypt()">Encrypt-Decrypt</button>
-	</div>
+          <div>Plain Text:</div>
+          <textarea id="plaintext" rows="5">Hello World</textarea>
+          <button onclick="clearPlaintext()">Clear</button>
+          <div>Cipher Text:</div>
+          <textarea id="ciphertext" rows="5"></textarea>
+          <button onclick="clearCiphertext()">Clear</button>
+        </div>
+        <div class="btn-block">
+          <button onclick="encryptDecrypt()">Encrypt-Decrypt</button>
+        </div>
       </form>
-      </div>
-      <script>
-	      function genRandomKey() {
-				    const CHARS ="ABCDEFGHIJKLMNOPQRSTUVWXTZ0123456789abcdefghiklmnopqrstuvwxyz"; 
-				    var s = "";
-				    const length = 240;
-				    for (let i=0; i<length; i++) {
-							  var num = Math.floor(Math.random() * CHARS.length);
-							  s += CHARS.substring(num, num+1);
-
-						  }
-				    document.getElementById("key").value = s;
-			    }
-
-	      function genSalt() {
-				    const CHARS ="ABCDEFGHIJKLMNOPQRSTUVWXTZ0123456789abcdefghiklmnopqrstuvwxyz"; 
-				    var s = "";
-				    const length = 10;
-				    for (let i=0; i<length; i++) {
-							  var num = Math.floor(Math.random() * CHARS.length);
-							  s += CHARS.substring(num, num+1);
-
-						  }
-				    var originaltext = document.getElementById("plaintext").value;
-				    document.getElementById("plaintext").value = s + " " + originaltext;
-			    }
-
-
-	      function XOR_crypt(text, key, encrypt) {
-				    var output = "";
-				    for (let i=0; i<text.length; i++) {
-
-							  let j = i;
-							  if (j >= key.length) {
-										j = i % key.length;		
-									}
-							  output += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(j));
-
-							  Format(text, key, i, j);
-							  //console.log(text.charAt(i), intFormat(text.charCodeAt(i) ^ key.charCodeAt(j)) );
-						  }
-
-				    if (encrypt) {
-							  document.getElementById("ciphertext").value = output;
-						  } else {
-									document.getElementById("plaintext").value = output;
-								}
-			    }
-
-	      function Format(text, key, i, j) {
-				    let xor = text.charCodeAt(i) ^ key.charCodeAt(j); //this is an int here...
-				    //let xorInt  = xor; //parseInt(xor); //then this is not needed
-				    let xorHex = xor.toString(16); //this is what would be concat'd  to output
-				    if (xorHex.length == 1) {
-							  xorHex = "0" + xorHex;
-						  }
-				    let xorIntReverse = parseInt(xorHex, 16); //would need to run parseInt(char, 16) to convert back
-				    let reverse = xor ^ key.charCodeAt(j);
-				    console.log('Format', xorHex, xorIntReverse, text.charCodeAt(i),  reverse);
-				    return xor;
-			    }
-	      function XOR_crypt2(text, key) {
-				    var output = "";
-				    for (let i = 0; i<text.length; i++) {
-							  let j = i;
-							  if (j >= key.length) {
-										j = i % key.length;		
-									}
-
-
-							  let xor = (text.charCodeAt(i) ^ key.charCodeAt(j)).toString(16) ;
-							  if (xor.length === 1) {
-										xor = "0" + xor;
-									}
-							  output += xor;
-							  //console.log(text.charAt(i), xor);
-
-						  }
-
-				    document.getElementById("ciphertext").value = output;
-			    }
-
-
-	      function XOR_decrypt2(text, key, encrypt) {
-				    //ciphertext is encoded here in hex so that each character takes 2 hex chars
-				    var output = "";
-				    let j = 0;
-				    for (let i=0; i<text.length; i+=2) {
-							  if (j >= key.length) {
-										j = i % key.length;		
-									}
-
-
-							  let hex = text.slice(i, i+2);
-							  let c = parseInt(hex, 16);
-							  //console.log(hex, c);
-							  output += String.fromCharCode(c ^ key.charCodeAt(j)) ;
-
-							  j += 1;
-
-
-						  }
-
-				    document.getElementById("plaintext").value = output;
-			    }
-
-
-	      function notifyError(msg) {
-				    var elem = document.getElementById("message");
-				    elem.innerHTML = '<div id="error" class="notify-error">' + msg + '</div>';
-
-				    console.log(elem.innerHTML);
-				    //var error = document.createElement('div');
-				    //message.innerHTML = '<div id="error" class="notify-error">' + msg + '</div>';
-				    //message.appendChild(error);
-			    }
-
-	      function clearError() {
-				    var elem = document.getElementById("message");
-				    elem.innerHTML = '';
-			    }
-
-	      function clearPlaintext() {
-				    document.getElementById("plaintext").value = '';
-			    }
-
-	      function clearCiphertext() {
-				    document.getElementById("ciphertext").value = '';
-			    }
-
-
-	      function encryptDecrypt() {
-				    //check 3 fields: key, plaintext, cipher text: 
-				    //need key + plain or key + cipher text!
-				    //
-				    var key = document.getElementById("key").value;
-				    var plaintext = document.getElementById("plaintext").value;
-				    var ciphertext = document.getElementById("ciphertext").value;
-				    console.log("key:", key);
-				    console.log("plaintext:", plaintext);
-				    console.log("ciphertext:", ciphertext);
-
-				    clearError();
-
-				    if (!key) { //add warning- need key for everything!
-							  console.log("Need key!")
-							  notifyError("Need a key");
-						  }
-				    else if (!plaintext && !ciphertext) { //add warning need one or the other text for anything
-							  notifyError("Need either plain text -OR- cipher text");
-						  }
-				    else if (plaintext && ciphertext) { //add warning: need to remove either plaintext or ciphertext- need one or the other
-							  console.log("Need only 1 of plain text -OR- cipher text");
-							  notifyError("Need only 1 of plain text -OR- cipher text");
-						  }
-				    else if (key && plaintext) { //encrypt
-							  console.log("Encrypting...");
-							  //XOR_crypt(plaintext, key, true);
-							  XOR_crypt2(plaintext, key);
-							  console.log("Done.");
-						  }
-				    else if (key && ciphertext) { //decrypt
-							  console.log("Decrypting...");
-							  //XOR_crypt(ciphertext, key, false);
-							  //XOR_crypt2(ciphertext, key, false);
-							  XOR_decrypt2(ciphertext, key);
-							  console.log("Done.");
-						  }
-			    }
-
-          //function onLoad() {
-            genRandomKey();
-            //clearPlainText();
-            genSalt();
-            encryptDecrypt(); 
-           //         }
-      </script>
-
-
+    </div>
   </body>
+
 </html>
+
