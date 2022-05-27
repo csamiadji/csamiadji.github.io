@@ -4,9 +4,6 @@ var repeats ;
 var DELIMITER = ",";
 var isUTF8 = false;
 
-//var maskingTextFileData = document.getElementById("kalavala_file");
-
-
 function saveText(id, name) {
     let text = document.getElementById(id).value;	
 
@@ -19,13 +16,15 @@ function saveText(id, name) {
 }
 
 
-function loadDefaultMaskingText(elem) {
+function loadDefaultMaskingText() {
     //let maskingText = document.getElementById(kalavala").innerHTML;
     //let maskingText = document.getElementById("kalavala_file");
     //maskingTextElem.innerHTML = maskingText;
 
     let maskingTextElem = document.getElementById("maskingText");
-    maskingTextElem.innerHTML = elem.contentDocument.body.childNodes[0].innerHTML;
+    //maskingTextElem.innerHTML = elem.contentDocument.body.childNodes[0].innerHTML;
+    maskingTextElem.innerHTML = kalavala_text;
+    console.log("loadDefaultMaskingText");
 }
 
 function myStringSplit(text, delim) {
@@ -278,4 +277,4 @@ function clearHiddenOutputText() {
 }
 
 
-//maskingTextFileData.onload = loadDefaultMaskingText();
+window.onload = loadDefaultMaskingText();
