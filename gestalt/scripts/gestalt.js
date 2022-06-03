@@ -81,29 +81,31 @@ function setImageSource(elem) {
 function updateContours() {
     let src = cv.imread(imgElement);
 
-    let dst = new cv.Mat.zeros(src.cols, src.rows, cv.CV_8UC3);
+    let contourIm = new cv.Mat.zeros(src.cols, src.rows, cv.CV_8UC3);
 
-    let boundingBoxes = new cv.Mat.zeros(src.cols, src.rows, cv.CV_8UC3);
-    let threshold = new cv.Mat.zeros(src.cols, src.rows, cv.CV_8UC3);
-    getContours(src, dst, boundingBoxes, threshold); 
+    let bboxIm = new cv.Mat.zeros(src.cols, src.rows, cv.CV_8UC3);
+    let cannyIm = new cv.Mat.zeros(src.cols, src.rows, cv.CV_8UC3);
+    let houghIm = new cv.Mat.zeros(src.cols, src.rows, cv.CV_8UC3);
+    getContours(src, contourIm, bboxIm, cannyIm, houghIm); 
 
     updateGestalt(); 
 
-    cv.imshow('canvasOutput', dst);
-    cv.imshow('canvasBoundingBoxes', boundingBoxes);
-    cv.imshow('canvasThreshold', threshold);
+    cv.imshow('canvasOutput', contourIm);
+    cv.imshow('canvasBoundingBoxes', bboxIm);
+    cv.imshow('canvasThreshold', cannyIm);
+    cv.imshow('canvasHoughTransform', houghIm);
 
     src.delete();
-    dst.delete();
-    boundingBoxes.delete();
-    threshold.delete();
-
+    contourIm.delete();
+    bboxIm.delete();
+    cannyIm.delete();
+    houghIm.delete();
 };
 
 imgElement.onload = loadCanvas;
 
 
-function getContours(src, dst, dst2, dst3) { //, colorIm, areaIm, distIm) {
+function getContours(src, contourIm, bboxIm, cannyIm, houghIm) { //, colorIm, areaIm, distIm) {
 
     state = {colors: [],
             areas: [],
@@ -129,14 +131,15 @@ function getContours(src, dst, dst2, dst3) { //, colorIm, areaIm, distIm) {
     }
 
     //let cannyIm = new cv.Mat();
-    cv.Canny(gray, dst3, threshold, threshold*2); //, cv.THRESH_BINARY);
+    cv.Canny(gray, cannyIm, threshold, threshold*2); //, cv.THRESH_BINARY);
 
     if (state.contours !== null) {
         state.contours.delete();
     }
     state.contours = new cv.MatVector();
     let hierarchy = new cv.Mat();
-    cv.findContours(dst3, state.contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
+    cv.findContours(cannyIm, state.contours, hierarchy, cv.RETR_TREE, 
+                    cv.CHAIN_APPROX_SIMPLE);
     console.log("# contours: ", state.contours.size());
 
     let colors = [];
@@ -147,10 +150,11 @@ function getContours(src, dst, dst2, dst3) { //, colorIm, areaIm, distIm) {
 
     let mask = new cv.Mat.zeros(src.cols, src.rows, cv.CV_8UC1); //mask must be single channel or else kaboom!
     for (let i = 0; i < state.contours.size(); ++i) {
-        let color = new cv.Scalar(Math.round(Math.random() * 255), Math.round(Math.random() * 255),
-            Math.round(Math.random() * 255));
+        let color = new cv.Scalar(Math.round(Math.random() * 255), 
+                                    Math.round(Math.random() * 255),
+                                    Math.round(Math.random() * 255));
         colors.push(color);
-        cv.drawContours(dst, state.contours, i, color, 1, cv.LINE_8, hierarchy, 100);
+        cv.drawContours(contourIm, state.contours, i, color, 1, cv.LINE_8, hierarchy, 100);
 
         //mask out contour region to compute area...
         cv.bitwise_xor(mask, mask, mask);
@@ -167,7 +171,7 @@ function getContours(src, dst, dst2, dst3) { //, colorIm, areaIm, distIm) {
     //let bboxes = [];
     //let centroids = [];
 
-    if (dst2) {
+    if (bboxIm) {
 
         for (let i = 0; i < state.contours.size(); ++i) {
             let r = cv.boundingRect( state.contours.get(i) );
@@ -175,7 +179,7 @@ function getContours(src, dst, dst2, dst3) { //, colorIm, areaIm, distIm) {
             let point1 = new cv.Point(r.x, r.y);
             let point2 = new cv.Point(r.x + r.width, r.y + r.height);
 
-            cv.rectangle(dst2, point1, point2, colors[i], 2, cv.LINE_AA, 0);
+            cv.rectangle(bboxIm, point1, point2, colors[i], 2, cv.LINE_AA, 0);
 
             state.bboxes.push( [point1.x, point1.y, point2.x, point2.y] );
 
@@ -186,6 +190,44 @@ function getContours(src, dst, dst2, dst3) { //, colorIm, areaIm, distIm) {
        }
     } 
 
+    let lines = new cv.Mat();
+    //src, dst, rho, theta, thresh, srn, stn, min_theta, max_theta
+    cannyIm.copyTo(houghIm);
+    cv.HoughLines(cannyIm, lines, 20, Math.PI / 180, 1, 0, 0, 0, Math.PI);
+    
+    for (let i=0; i<lines.rows; i++) {
+        let rho = lines.data32F[i * 2];
+        let theta = lines.data32F[i * 2 + 1];  
+        let a = Math.cos(theta);
+        let b = Math.sin(theta);
+        let x0 = a * rho;
+        let y0 = b * rho;
+        let startPoint = {x: x0 - 1000 * b,
+                          y: x0 + 1000 * a};
+        let endPoint = {x: x0 + 1000 * b,
+                        y: x0 - 1000 * a};
+        cv.line(houghIm, startPoint, endPoint, [255, 0, 0, 255]);
+    }
+    
+    /*
+    //Probabilistic Hough Transform- tends to only find short lines
+    //doesn't seem as useful for Closure | Continuity
+    //cv.HoughLinesP(cannyIm, lines, 20, Math.PI / 180, 2, 0, 0); 
+    cv.HoughLinesP(cannyIm, lines, 20, Math.PI / 180, 2, 10, 0); 
+    for (let i=0; i<lines.rows; i++) {
+         let startPoint = {x: lines.data32S[i * 4], 
+                          y: lines.data32S[i * 4 + 1]};
+        let endPoint = {x: lines.data32S[i * 4 + 2],
+                        y: lines.data32S[i * 4 + 3]};
+        let color = new cv.Scalar(Math.round(Math.random() * 255), 
+                                    Math.round(Math.random() * 255),
+                                    Math.round(Math.random() * 255));
+
+        //cv.line(houghIm, startPoint, endPoint, [255, 0, 0, 255]);
+        cv.line(houghIm, startPoint, endPoint, color);
+       
+    }
+    */ 
     //console.log('# areas:', state.areas.length);
     //console.log('# bboxes:', state.bboxes.length);
 
@@ -193,6 +235,8 @@ function getContours(src, dst, dst2, dst3) { //, colorIm, areaIm, distIm) {
     //cannyIm.delete();
     //contours.delete();
     hierarchy.delete();
+
+    lines.delete();
 }
 
 function updateGestalt_Old() { //distIm, areaIm, colorIm) {
@@ -1202,7 +1246,7 @@ function saveState() {
 }
 
 function restoreState() {
-    //save parameters 
+    //restore parameters 
     let filenameElem = document.getElementById("imageSrc").src;
 
     let thresholdElem = document.getElementById("sliderEdgeThreshold");
