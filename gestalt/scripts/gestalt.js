@@ -130,8 +130,24 @@ function getContours(src, contourIm, bboxIm, cannyIm, houghIm) { //, colorIm, ar
         gray = src.clone();
     }
 
-    //let cannyIm = new cv.Mat();
-    cv.Canny(gray, cannyIm, threshold, threshold*2); //, cv.THRESH_BINARY);
+    //plain Canny 
+    //cv.Canny(gray, cannyIm, threshold, threshold*2); //, cv.THRESH_BINARY);
+
+    //DoG- difference of Gaussians alternative to canny 
+    //let loSigma = new cv.Mat.zeros(src.cols, src.rows, cv.CV_8UC3);
+    //let hiSigma = new cv.Mat.zeros(src.cols, src.rows, cv.CV_8UC3);
+    //cv.GaussianBlur(gray, loSigma, new cv.Size(3, 3), 0, 0, cv.BORDER_DEFAULT);
+    //cv.GaussianBlur(gray, hiSigma, new cv.Size(7, 7), 0, 0, cv.BORDER_DEFAULT);
+    //cv.bilateralFilter(gray, loSigma, 5, 10, 3, cv.BORDER_DEFAULT);
+    //cv.bilateralFilter(gray, hiSigma, 7, 10, 5, cv.BORDER_DEFAULT);
+    //let edgeMask = new cv.Mat();
+    //cv.subtract(loSigma, hiSigma, cannyIm, edgeMask, -1);
+
+    //Canny edge detect + bilateralFilter- bilateral cleans things
+    //up a bit
+    let hiSigma = new cv.Mat.zeros(src.cols, src.rows, cv.CV_8UC3);
+    cv.bilateralFilter(gray, hiSigma, 7, 20, 7, cv.BORDER_DEFAULT);
+    cv.Canny(hiSigma, cannyIm, threshold, threshold*2);
 
     if (state.contours !== null) {
         state.contours.delete();
@@ -230,6 +246,10 @@ function getContours(src, contourIm, bboxIm, cannyIm, houghIm) { //, colorIm, ar
     */ 
     //console.log('# areas:', state.areas.length);
     //console.log('# bboxes:', state.bboxes.length);
+
+    hiSigma.delete();
+    //loSigma.delete();
+    //edgeMask.delete();
 
     gray.delete();
     //cannyIm.delete();
