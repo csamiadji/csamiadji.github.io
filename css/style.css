@@ -2,12 +2,31 @@
   font-family: "RedHat";
   src: url("../fonts/RedHatDisplay-Regular.otf") format("opentype");
 }
+/* new */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600&&display=swap');
 
+:root {
+  --color-font-dark: #212529;
+  --color-font-light: #868e96;
+  --bg-light: #f1f3f5;
+  --color-link: #0366d6;
+  --border-radius: 0.3rem;
+}
 
+body {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+  color: var(--color-font-dark);
+  padding: 0 1rem;
+}
+
+/* end new */
 
 
 h1 {
-    font-family: "RedHat";
+    font-family: "SimSun", serif; /* "RedHat";*/
     font-style: bold;
     font-weight: 100;
     font-variant-ligatures: normal;
